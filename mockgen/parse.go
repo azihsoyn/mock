@@ -31,8 +31,9 @@ import (
 )
 
 var (
-	imports  = flag.String("imports", "", "(source mode) Comma-separated name=path pairs of explicit imports to use.")
-	auxFiles = flag.String("aux_files", "", "(source mode) Comma-separated pkg=path pairs of auxiliary Go source files.")
+	imports   = flag.String("imports", "", "(source mode) Comma-separated name=path pairs of explicit imports to use.")
+	auxFiles  = flag.String("aux_files", "", "(source mode) Comma-separated pkg=path pairs of auxiliary Go source files.")
+	sourcePkg = flag.String("source_package", "", "(source mode) full pkg path")
 )
 
 // TODO: simplify error reporting
@@ -146,8 +147,9 @@ func (p *fileParser) parseFile(file *ast.File) (*model.Package, error) {
 	}
 
 	var is []*model.Interface
+	pkg := *sourcePkg
 	for ni := range iterInterfaces(file) {
-		i, err := p.parseInterface(ni.name.String(), "", ni.it)
+		i, err := p.parseInterface(ni.name.String(), pkg, ni.it)
 		if err != nil {
 			return nil, err
 		}
